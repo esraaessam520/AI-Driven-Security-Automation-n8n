@@ -1,0 +1,328 @@
+{
+  "name": "tasks.workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b408afd5-5aeb-4b32-9a06-bfafff246989",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "caseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "~123789"
+        },
+        "taskFields": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "Test Task",
+            "description": "Test task description",
+            "group": "Investigation",
+            "flag": false,
+            "mandatory": true
+          }
+        }
+      },
+      "type": "n8n-nodes-base.theHiveProject",
+      "typeVersion": 1,
+      "position": [
+        688,
+        400
+      ],
+      "id": "903dad6e-09df-4b2d-960b-6c14bd19a3df",
+      "name": "TheHive Task Create"
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "update",
+        "taskId": "id1",
+        "updateFields": {
+          "description": "New description"
+        }
+      },
+      "type": "n8n-nodes-base.salesforce",
+      "typeVersion": 1,
+      "position": [
+        928,
+        224
+      ],
+      "id": "ff717828-4afd-4bfe-9944-46f3a94e3be4",
+      "name": "Salesforce4"
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "delete",
+        "taskId": "id1"
+      },
+      "type": "n8n-nodes-base.salesforce",
+      "typeVersion": 1,
+      "position": [
+        400,
+        464
+      ],
+      "id": "24df6aac-d3fb-4c21-b9c5-efd2d8956690",
+      "name": "Salesforce5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"أنت الآن خبير في تحليل البيانات الأمنية والتقنية (Technical Analyst). ستصلك بيانات خام من نظام التنبيهات.\n\nمهمتك هي تحليل هذه البيانات وتقديم المخرجات في التنسيق التالي حصراً:\n\nالملخص (Summary): اشرح ما حدث في جملة واحدة بسيطة.\n\nمستوى الخطورة (Severity): اختر كلمة واحدة فقط (Low, Medium, High, Critical) بناءً على نوع التنبيه.\n\nخطة العمل (Action Plan): اكتب خطوة واحدة عملية يجب على المهندس القيام بها.\n\nالتصنيف (Category): صنف التنبيه (مثلاً: Login, Network, Malware, System).\n\nالبيانات التي ستحللها هي:\n{{ $json[\"البيانات القادمة من التريجر هنا\"] }}\n\nملاحظة: أريد الإجابة بشكل مباشر وواضح لتكون جاهزة للتخزين في جدول\nGoogle Sheets\n\nحلل التنبيه الأمني التالي وأعطني المخرجات بصيغة JSON تحتوي على: (Summary, Severity, Recommendation). لا تكتب أي نص اعتذار، فقط البيانات",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4a873c65-e3a1-4d76-9551-8de3942879a0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        176
+      ],
+      "id": "9f1d3a95-bebe-4ef6-8201-a06ee8d6d15a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mWVkfUNQQUws3puh",
+          "name": "Google Gemini(PaLM) Api account 25"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1sM5ABFtj9r4pGZ9vCBIeSo04QKoypgQ_49AkvpSBYuY"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sM5ABFtj9r4pGZ9vCBIeSo04QKoypgQ_49AkvpSBYuY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Alert_Summary": "={{ $json.Summary }}",
+            "Recommendation": "={{ $json.Recommendation }}",
+            "Severity": "={{ $json.Severity }}",
+            "Date": "={{ $today }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Alert_Summary",
+              "displayName": "Alert_Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Severity",
+              "displayName": "Severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        0
+      ],
+      "id": "96a6de8e-8da5-4698-9ca7-bd1c6148fc6f",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "njs3I8ght9h9U227",
+          "name": "Google Service Account account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawData = $node[\"AI Agent\"].json[\"output\"];\nconst cleanedData = rawData.replace(/```json|```/g, \"\").trim();\nreturn JSON.parse(cleanedData);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        0
+      ],
+      "id": "3ace0dc2-7ebd-40d0-8cac-3b20583f3d11",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fromEmail": "ee060356@gmail.com",
+        "toEmail": "essamesraa922@gmail.com",
+        "subject": "=تنبيه أمني جديد: {{ $json.Severity }}",
+        "emailFormat": "={{ $json.Alert_Summary }}\n\n{{ $json.Recommendation }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        10.0078125
+      ],
+      "id": "1bc5d0a7-c711-4f34-9974-f6bf764494f5",
+      "name": "Send email",
+      "webhookId": "ff3a71b9-7d2f-40ac-bb56-6db1b5669d03",
+      "credentials": {
+        "smtp": {
+          "id": "h9ZTI0MGFlWAdwpD",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "TheHive Task Create": [
+      {
+        "json": {
+          "_id": "~654321",
+          "_type": "Task",
+          "title": "Test Task",
+          "description": "Test task description",
+          "group": "Investigation",
+          "status": "Waiting",
+          "flag": false,
+          "mandatory": true,
+          "createdAt": 1698753600000,
+          "updatedAt": 1698753600000
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salesforce4": {
+      "main": [
+        []
+      ]
+    },
+    "Salesforce5": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "9827e2ca-be6b-4504-a2b7-ef89eef3b2cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bb825937d18a2a4eda0b3329a95e4a40706c03b1f6e438576318944fdd88a84d"
+  },
+  "id": "CmQP6YUB-YGMosJTn473U",
+  "tags": []
+}
